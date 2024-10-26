@@ -40,7 +40,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, max_score =
     seurat_object$leiden_clusters <- as.factor(seurat_object$leiden_clusters)
     num_clusters <- length(levels(seurat_object$leiden_clusters))
     if (old_clusters - num_clusters == 0) break()
-    }
+  }
   return(seurat_object)
 }
 leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150){
@@ -71,10 +71,10 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
     seurat_object$leiden_clusters <- seurat_object$starting_clusters
   }
   sizes <- data.frame(table(seurat_object$leiden_clusters))
-  for (i in 1:length(sizes)){
+  for (i in 1:length(rownames(sizes))){
     if (sizes$Freq[[i]] < 20){
       seurat_object$leiden_clusters <- seurat_object$starting_clusters
-      }
+    }
   }
   return(seurat_object)
 }
