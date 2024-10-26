@@ -74,6 +74,7 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   for (i in 1:length(sizes)){
     if (sizes$Freq[[i]] < 20){
       seurat_object$leiden_clusters <- seurat_object$starting_clusters
+      }
   }
   return(seurat_object)
 }
