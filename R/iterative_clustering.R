@@ -27,7 +27,7 @@ clustering_iteration <- function(seurat_object, min_score, min_size){
   Idents(seurat_object) <- seurat_object$leiden_clusters
   objs <- SplitObject(seurat_object, "leiden_clusters")
   objs <- objs[order(names(objs))]
-  samples <- lapply(objs, leiden_clustering, score_limit = max_score, cluster_size = min_size)
+  samples <- lapply(objs, leiden_clustering, score_limit = min_score, cluster_size = min_size)
   samples <- samples[order(names(samples))]
   merged_seurats <- merge(samples[[1]], samples[-1])
   merged_seurats@graphs <- seurat_object@graphs
