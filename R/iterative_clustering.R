@@ -16,18 +16,18 @@ initial_clustering <- function(seurat_object){
   merged_seurats@reductions <- seurat_object@reductions
   return(merged_seurats)
 }
-clustering_iteration <- function(seurat_object, min_score, min_size){
+clustering_iteration <- function(seurat_object, min_score, cluster_size){
   #' Performs an iteration of Leiden clustering to a Seurat object.
   #' @param seurat_object an SCTransformed, integrated Seurat object
   #' @param min_score minimum clustering score
-  #' @param min_size minimum cluster size
+  #' @param cluster_size minimum cluster size
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
   require(Seurat)
   require(scCustomize)
   Idents(seurat_object) <- seurat_object$leiden_clusters
   objs <- SplitObject(seurat_object, "leiden_clusters")
   objs <- objs[order(names(objs))]
-  samples <- lapply(objs, leiden_clustering, score_limit = min_score, cluster_size = min_size)
+  samples <- lapply(objs, leiden_clustering, score_limit = min_score, min_size = cluster_size)
   samples <- samples[order(names(samples))]
   merged_seurats <- merge(samples[[1]], samples[-1])
   merged_seurats@graphs <- seurat_object@graphs
