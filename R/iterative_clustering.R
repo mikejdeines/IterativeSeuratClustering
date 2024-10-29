@@ -46,7 +46,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   for (i in 1:max_iterations-1){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
     print(paste("Previous Cluster Count:", old_clusters, sep = " "))
-    seurat_object <- clustering_iteration(seurat_object, min_score, min_size)
+    seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size)
     seurat_object$leiden_clusters <- as.factor(seurat_object$leiden_clusters)
     num_clusters <- length(levels(seurat_object$leiden_clusters))
     if (old_clusters - num_clusters == 0) break()
