@@ -66,7 +66,6 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
   cluster_count <- length(levels(Idents(seurat_object)))
   while (cluster_count != num_clusters){
-    print(paste("Cluster count:", cluster_count))
     if (cluster_count > num_clusters){
       initial_resolution = initial_resolution/10
       seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
