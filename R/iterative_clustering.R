@@ -45,7 +45,6 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   cluster_sizes <- data.frame()
   for (i in 1:max_iterations-1){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
-    print(paste("Previous Cluster Count:", old_clusters, sep = " "))
     seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size)
     seurat_object$leiden_clusters <- as.factor(seurat_object$leiden_clusters)
     num_clusters <- length(levels(seurat_object$leiden_clusters))
@@ -79,7 +78,6 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
       cluster_count <- length(levels(seurat_object$seurat_clusters))
     }
   }
-  print(paste("Cluster count:", cluster_count))
   seurat_object$leiden_clusters <- Idents(seurat_object)
   seurat_object$leiden_clusters <- paste(seurat_object$starting_clusters, "_", seurat_object$leiden_clusters, sep = "")
   score <- clustering_score(seurat_object)
