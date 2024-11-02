@@ -97,7 +97,7 @@ clustering_score <- function(seurat_object){
   #' @param seurat_object an SCTransformed, integrated Seurat object
   #' @returns a clustering score
   require(Seurat)
-  de.genes <- FindMarkers(seurat_object, ident.1 = 1, ident.2 = 2, logfc.threshold = 1, min.pct = 0.25, recorrect_umi = FALSE)
+  de.genes <- FindMarkers(seurat_object, ident.1 = 1, ident.2 = 2, logfc.threshold = 1, min.pct = 0.5, recorrect_umi = FALSE)
   de.genes <- subset(de.genes, abs(de.genes$avg_log2FC) > 2)
   score <- -log10(de.genes$p_val_adj)
   score[score > 20] <- 20
