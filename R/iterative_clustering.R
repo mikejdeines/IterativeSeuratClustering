@@ -103,11 +103,7 @@ clustering_score <- function(seurat_object, pct.1){
   require(Seurat)
   de.genes <- FindMarkers(seurat_object, ident.1 = 1, ident.2 = 2, logfc.threshold = 1, min.pct = pct.1, recorrect_umi = FALSE)
   de.genes <- subset(de.genes, abs(de.genes$avg_log2FC) > 2)
-  for (i in 1:nrow(de.genes)){
-    if (de.genes$p_val_adj[[i]] == 0){
-      de.genes$p_val_adj[[i]] <- 1e-20
-    }
-  }
+  de.genes <- de.genes[de.genes$p_val_adj == 0,5] <- 1e-20
   score <- -log10(de.genes$p_val_adj)
   score[score > 20] <- 20
   score <- sum(score)
