@@ -5,7 +5,7 @@ initial_clustering <- function(seurat_object){
   #' @returns a Seurat object with initial clusters in the "leiden_clusters" slot
   require(Seurat)
   require(scCustomize)
-  seurat_object <- FindClusters(seurat_object, resolution = 0.01, algorithm = 4, method = "igraph")
+  seurat_object <- FindClusters(seurat_object, resolution = 0.01, algorithm = 4, method = "igraph", verbose = FALSE)
   seurat_object@assays$RNA <- JoinLayers(seurat_object@assays$RNA)
   objs <- SplitObject(seurat_object, "seurat_clusters")
   objs <- objs[order(names(objs))]
@@ -67,18 +67,18 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   require(Seurat)
   seurat_object$starting_clusters <- Idents(seurat_object)
   initial_resolution = 1
-  seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
+  seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
   cluster_count <- length(levels(Idents(seurat_object)))
   while (cluster_count != num_clusters){
     #print(paste("Cluster count:", cluster_count))
     if (cluster_count > num_clusters){
       initial_resolution = initial_resolution/10
-      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
+      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
       cluster_count <- length(levels(seurat_object$seurat_clusters))
     }
     else{
       initial_resolution = initial_resolution*5
-      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
+      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
       cluster_count <- length(levels(seurat_object$seurat_clusters))
     }
   }
