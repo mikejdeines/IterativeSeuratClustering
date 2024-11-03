@@ -85,7 +85,7 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   print(paste("Cluster count:", cluster_count))
   seurat_object$leiden_clusters <- Idents(seurat_object)
   seurat_object$leiden_clusters <- paste(seurat_object$starting_clusters, "_", seurat_object$leiden_clusters, sep = "")
-  score <- clustering_score(seurat_object)
+  score <- clustering_score(seurat_object, pct.1 = pct.1)
   if (score < score_limit){
     seurat_object$leiden_clusters <- seurat_object$starting_clusters
   }
