@@ -66,17 +66,17 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   require(Seurat)
   seurat_object$starting_clusters <- Idents(seurat_object)
   initial_resolution = 1
-  seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
+  seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
   cluster_count <- length(levels(Idents(seurat_object)))
   while (cluster_count != num_clusters){
     if (cluster_count > num_clusters){
       initial_resolution = initial_resolution/10
-      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
+      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
       cluster_count <- length(levels(seurat_object$seurat_clusters))
     }
     else{
       initial_resolution = initial_resolution*5
-      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph")
+      seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
       cluster_count <- length(levels(seurat_object$seurat_clusters))
     }
   }
@@ -98,17 +98,18 @@ clustering_score <- function(seurat_object, pct.1){
   #' Calculates cluster score based on DE genes. Determines DE genes between two clusters with a Wilcoxon signed rank test.
   #' Cluster score is the sum of -log10 of Bonferroni-corrected p values. The maximum score any gene can contribute is 20.
   #' @param seurat_object a normalized, integrated Seurat object
+  #' @param pct.1 fraction of gene expression in the overexpressing cluster
   #' @returns a clustering score
   require(Seurat)
   de.genes <- FindMarkers(seurat_object, ident.1 = 1, ident.2 = 2, logfc.threshold = 1, min.pct = pct.1, recorrect_umi = FALSE)
   de.genes <- subset(de.genes, abs(de.genes$avg_log2FC) > 2)
-  if (length(de.genes < 1)){
-    score <- 0
+  for (i in 1:length(de.genes)){
+    if (de.genes$p_val_adj[[i]] == 0){
+      de.genes$p_val_adj[[i]] <- 1e-20
+    }
   }
-  else{
-    score <- -log10(de.genes$p_val_adj)
-    score[score > 20] <- 20
-    score <- sum(score)
-  }
+  score <- -log10(de.genes$p_val_adj)
+  score[score > 20] <- 20
+  score <- sum(score)
   return(score)
 }
