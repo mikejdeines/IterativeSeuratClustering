@@ -4,14 +4,16 @@
 \alias{clustering_iteration}
 \title{Performs an iteration of Leiden clustering to a Seurat object.}
 \usage{
-clustering_iteration(seurat_object, min_score, min_size)
+clustering_iteration(seurat_object, min_score, cluster_size, pct.1)
 }
 \arguments{
-\item{seurat_object}{an SCTransformed, integrated Seurat object}
+\item{seurat_object}{a normalized, integrated Seurat object}
 
 \item{min_score}{minimum clustering score}
 
-\item{min_size}{minimum cluster size}
+\item{cluster_size}{minimum cluster size}
+
+\item{pct.1}{fraction of gene expression in the overexpressing cluster}
 }
 \value{
 a Seurat object with clusters in the "leiden_clusters" slot

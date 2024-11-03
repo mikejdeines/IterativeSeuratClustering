@@ -5,10 +5,10 @@
 \title{Calculates cluster score based on DE genes. Determines DE genes between two clusters with a Wilcoxon signed rank test.
 Cluster score is the sum of -log10 of Bonferroni-corrected p values. The maximum score any gene can contribute is 20.}
 \usage{
-clustering_score(seurat_object)
+clustering_score(seurat_object, pct.1)
 }
 \arguments{
-\item{seurat_object}{an SCTransformed, integrated Seurat object}
+\item{seurat_object}{a normalized, integrated Seurat object}
 }
 \value{
 a clustering score

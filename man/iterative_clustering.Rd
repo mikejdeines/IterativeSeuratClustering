@@ -8,7 +8,8 @@ iterative_clustering(
   seurat_object,
   max_iterations = 10,
   min_score = 150,
-  cluster_size = 20
+  cluster_size = 20,
+  pct.1 = 0.5
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ iterative_clustering(
 \item{min_score}{minimum cluster score}
 
 \item{cluster_size}{minimum cluster size}
+
+\item{pct.1}{fraction of gene expression in the overexpressing cluster}
 }
 \value{
 a Seurat object with clusters in the "leiden_clusters" slot

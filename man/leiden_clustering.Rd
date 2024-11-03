@@ -9,17 +9,20 @@ leiden_clustering(
   seurat_object,
   num_clusters = 2,
   score_limit = 150,
-  min_size = 20
+  min_size = 20,
+  pct.1 = 0.5
 )
 }
 \arguments{
-\item{seurat_object}{an SCTransformed, integrated Seurat object}
+\item{seurat_object}{a normalized, integrated Seurat object}
 
 \item{num_clusters}{number of desired clusters. Default = 2.}
 
 \item{score_limit}{minimum score for a cluster. Default = 150.}
 
 \item{min_size}{minimum size of a cluster. Default = 20.}
+
+\item{pct.1}{fraction of gene expression in the overexpressing cluster. Default = 0.5.}
 }
 \value{
 a Seurat object with clusters in the "leiden_clusters" slot

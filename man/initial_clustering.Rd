@@ -8,7 +8,7 @@ Runs Leiden clustering at low resolution to find the initial clusters and runs o
 initial_clustering(seurat_object)
 }
 \arguments{
-\item{seurat_object}{an SCTransformed, integrated Seurat object}
+\item{seurat_object}{a normalized, integrated Seurat object}
 }
 \value{
 a Seurat object with initial clusters in the "leiden_clusters" slot
