@@ -45,7 +45,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
   seurat_object <- initial_clustering(seurat_object)
   cluster_sizes <- data.frame()
-  for (i in 1:max_iterations-1){
+  for (i in 2:max_iterations-1){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
     seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size, pct.1)
     seurat_object$leiden_clusters <- as.factor(seurat_object$leiden_clusters)
