@@ -7,5 +7,5 @@ Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Applies iterative clustering to Seurat objects, similarly to Tasic et al. (2016).
 License: What license is it under?
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.3.2
