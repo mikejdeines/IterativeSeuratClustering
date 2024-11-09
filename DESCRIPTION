@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Michael J. Deines
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Applies iterative clustering to Seurat objects, similarly to Tasic et al. (2016).
-License: What license is it under?
+License: GPL v3.0
 Encoding: UTF-8
 LazyData: false
 RoxygenNote: 7.3.2
