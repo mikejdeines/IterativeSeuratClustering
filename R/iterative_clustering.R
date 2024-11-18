@@ -37,7 +37,7 @@ clustering_iteration <- function(seurat_object, min_score, cluster_size, pct.1){
 }
 iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5){
   #' Performs iterative clustering on a Seurat object to find clusters expressing significant DE genes.
-  #' @param seurat_object an SCTransformed, integrated Seurat object
+  #' @param seurat_object a normalized, integrated Seurat object
   #' @param max_iterations number of clustering iterations to perform
   #' @param min_score minimum cluster score
   #' @param cluster_size minimum cluster size
