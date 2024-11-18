@@ -18,3 +18,7 @@ py_install("numpy==1.24.4")
 py_install("igraph")
 py_install("leidenalg")
 ```
+Due to some quirks in the SplitObject function, some of the downstream analysis needs to be modified:
+
+RunUMAP should be performed prior to clustering.
+If the data has been SCTransformed, FindMarkers or FindAllMarkers should be run with the parameter "recorrect_umi = FALSE".
