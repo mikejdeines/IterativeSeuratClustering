@@ -18,7 +18,7 @@ py_install("numpy==1.24.4")
 py_install("igraph")
 py_install("leidenalg")
 ```
-Due to some quirks in the SplitObject function, some of the downstream analysis needs to be modified:
+Since the merge function does not perserve the order of the cells, some changes to the standard analysis need to be made:
 
 RunUMAP should be performed prior to clustering.
 
