@@ -6,7 +6,6 @@ initial_clustering <- function(seurat_object){
   require(Seurat)
   require(scCustomize)
   seurat_object <- FindClusters(seurat_object, resolution = 0.01, algorithm = 4, method = "igraph", verbose = FALSE)
-  seurat_object@assays$RNA <- JoinLayers(seurat_object@assays$RNA)
   objs <- SplitObject(seurat_object, "seurat_clusters")
   objs <- objs[order(names(objs))]
   samples <- lapply(objs, leiden_clustering)
