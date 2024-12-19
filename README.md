@@ -18,6 +18,8 @@ py_install("numpy==1.24.4")
 py_install("igraph")
 py_install("leidenalg")
 ```
+If a Seurat v5 object is being used, run JoinLayers() prior to clustering.
+
 Since the merge function does not perserve the order of the cells, some changes to the standard analysis need to be made:
 
 RunUMAP should be performed prior to clustering.
