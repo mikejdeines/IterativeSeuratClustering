@@ -1,61 +1,65 @@
-initial_clustering <- function(seurat_object, reduction.name){
+initial_clustering <- function(seurat_object, reduction.name = "pca", dims.use = 1:30){
   #' Performs an initial clustering iteration on a Seurat object.
   #' Runs Leiden clustering at low resolution to find the initial clusters and runs one clustering iteration.
   #' @param seurat_object a normalized, integrated Seurat object
+  #' @param reduction.name name of the dimensional reduction used to find neighbors
+  #' @param dims.use number of dimensions to use for neighbors graph
   #' @returns a Seurat object with initial clusters in the "leiden_clusters" slot
   require(Seurat)
   require(scCustomize)
   seurat_object <- FindClusters(seurat_object, resolution = 0.01, algorithm = 4, method = "igraph", verbose = FALSE)
   objs <- SplitObject(seurat_object, "seurat_clusters")
   objs <- objs[order(names(objs))]
-  samples <- lapply(objs, leiden_clustering, reduction.name = reduction.name)
+  samples <- lapply(objs, leiden_clustering, reduction.name = reduction.name, dims.use = dims.use)
   samples <- samples[order(names(samples))]
   merged_seurats <- merge(samples[[1]], samples[-1])
   merged_seurats@graphs <- seurat_object@graphs
   merged_seurats@reductions <- seurat_object@reductions
   return(merged_seurats)
 }
-clustering_iteration <- function(seurat_object, min_score, cluster_size, pct.1, reduction.name){
+clustering_iteration <- function(seurat_object, min_score, cluster_size, pct.1, reduction.name = "pca", dims.use = 1:30){
   #' Performs an iteration of Leiden clustering to a Seurat object.
   #' @param seurat_object a normalized, integrated Seurat object
   #' @param min_score minimum clustering score
   #' @param cluster_size minimum cluster size
   #' @param pct.1 fraction of gene expression in the overexpressing cluster
+  #' @param reduction.name name of the dimensional reduction used to find neighbors
+  #' @param dims.use number of dimensions to use for neighbors graph
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
   require(Seurat)
   require(scCustomize)
   Idents(seurat_object) <- seurat_object$leiden_clusters
   objs <- SplitObject(seurat_object, "leiden_clusters")
   objs <- objs[order(names(objs))]
-  samples <- lapply(objs, leiden_clustering, score_limit = min_score, min_size = cluster_size, pct.1 = pct.1, reduction.name = reduction.name)
+  samples <- lapply(objs, leiden_clustering, score_limit = min_score, min_size = cluster_size, pct.1 = pct.1, reduction.name = reduction.name, dims.use = dims.use)
   samples <- samples[order(names(samples))]
   merged_seurats <- merge(samples[[1]], samples[-1])
   merged_seurats@graphs <- seurat_object@graphs
   merged_seurats@reductions <- seurat_object@reductions
   return(merged_seurats)
 }
-iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5, dims_use = 1:30, reduction.name = "pca"){
+iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5, dims.use = 1:30, reduction.name = "pca"){
   #' Performs iterative clustering on a Seurat object to find clusters expressing significant DE genes.
   #' @param seurat_object a normalized, integrated Seurat object
   #' @param max_iterations number of clustering iterations to perform
   #' @param min_score minimum cluster score
   #' @param cluster_size minimum cluster size
   #' @param pct.1 fraction of gene expression in the overexpressing cluster
-  #' @param dims_use number of dimensions to use for neighbors graph
-  #' @reduction.name name of the dimensional reduction used to find neighbors
+  #' @param dims.use number of dimensions to use for neighbors graph
+  #' @param reduction.name name of the dimensional reduction used to find neighbors
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
-  seurat_object <- initial_clustering(seurat_object, reduction.name = reduction.name)
+  seurat_object <- initial_clustering(seurat_object, reduction.name = reduction.name, dims.use = dims.use)
   cluster_sizes <- data.frame()
-  for (i in 2:max_iterations-1){
+  for (i in 2:(max_iterations-1)){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
-    seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size, pct.1, reduction.name = reduction.name)
+    seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size, pct.1, reduction.name = reduction.name, dims.use = dims.use)
     seurat_object$leiden_clusters <- as.factor(seurat_object$leiden_clusters)
     num_clusters <- length(levels(seurat_object$leiden_clusters))
     if (old_clusters - num_clusters == 0) break()
   }
   return(seurat_object)
 }
-leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = dims_use, reduction.name = reduction.name){
+leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = 1:30, reduction.name = "pca"){
   #' Leiden clustering into a set number of clusters. Varies resolution until the number of clusters is achieved.
   #' Requires a conda environment with igraph and leidenalg installed.
   #' @param seurat_object a normalized, integrated Seurat object
@@ -63,13 +67,15 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   #' @param score_limit minimum score for a cluster. Default = 150.
   #' @param min_size minimum size of a cluster. Default = 20.
   #' @param pct.1 fraction of gene expression in the overexpressing cluster. Default = 0.5.
+  #' @param dims.use number of dimensions to use for neighbors graph. Default = 1:30.
+  #' @param reduction.name name of the dimensional reduction used to find neighbors. Default = "pca".
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
   require(Seurat)
   seurat_object$starting_clusters <- Idents(seurat_object)
   if (ncol(seurat_object) < 3) {
-  message("Skipping: too few cells for clustering.")
-  seurat_object$leiden_clusters <- seurat_object$starting_clusters
-  return(seurat_object)
+    message("Skipping: too few cells for clustering.")
+    seurat_object$leiden_clusters <- seurat_object$starting_clusters
+    return(seurat_object)
   }
   available_pcs <- ncol(Embeddings(seurat_object, reduction = reduction.name))
   dims_to_use <- dims.use[dims.use <= available_pcs]
