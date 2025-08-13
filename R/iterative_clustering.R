@@ -8,7 +8,7 @@ initial_clustering <- function(seurat_object, reduction_name){
   seurat_object <- FindClusters(seurat_object, resolution = 0.01, algorithm = 4, method = "igraph", verbose = FALSE)
   objs <- SplitObject(seurat_object, "seurat_clusters")
   objs <- objs[order(names(objs))]
-  samples <- lapply(objs, leiden_clustering, reduction = reduction_name)
+  samples <- lapply(objs, leiden_clustering, reduction_name)
   samples <- samples[order(names(samples))]
   merged_seurats <- merge(samples[[1]], samples[-1])
   merged_seurats@graphs <- seurat_object@graphs
@@ -44,7 +44,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   #' @param dims_use number of dimensions to use for neighbors graph
   #' @reduction.name name of the dimensional reduction used to find neighbors
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
-  seurat_object <- initial_clustering(seurat_object, reduction_name = reduction.name)
+  seurat_object <- initial_clustering(seurat_object, reduction.name)
   cluster_sizes <- data.frame()
   for (i in 2:max_iterations-1){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
