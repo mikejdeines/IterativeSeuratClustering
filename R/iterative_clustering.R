@@ -44,7 +44,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   #' @param dims_use number of dimensions to use for neighbors graph
   #' @reduction.name name of the dimensional reduction used to find neighbors
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
-  seurat_object <- initial_clustering(seurat_object, reduction_name = reduction.name)
+  seurat_object <- initial_clustering(seurat_object, reduction.name = reduction.name)
   cluster_sizes <- data.frame()
   for (i in 2:max_iterations-1){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
