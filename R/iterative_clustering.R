@@ -8,7 +8,7 @@ initial_clustering <- function(seurat_object, reduction_name){
   seurat_object <- FindClusters(seurat_object, resolution = 0.01, algorithm = 4, method = "igraph", verbose = FALSE)
   objs <- SplitObject(seurat_object, "seurat_clusters")
   objs <- objs[order(names(objs))]
-  samples <- lapply(objs, leiden_clustering, reduction_name)
+  samples <- lapply(objs, leiden_clustering, reduction = reduction_name)
   samples <- samples[order(names(samples))]
   merged_seurats <- merge(samples[[1]], samples[-1])
   merged_seurats@graphs <- seurat_object@graphs
