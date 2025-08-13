@@ -34,7 +34,7 @@ clustering_iteration <- function(seurat_object, min_score, cluster_size, pct.1){
   merged_seurats@reductions <- seurat_object@reductions
   return(merged_seurats)
 }
-iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5){
+iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5, dims.use = 1:30){
   #' Performs iterative clustering on a Seurat object to find clusters expressing significant DE genes.
   #' @param seurat_object a normalized, integrated Seurat object
   #' @param max_iterations number of clustering iterations to perform
@@ -53,7 +53,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   }
   return(seurat_object)
 }
-leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5){
+leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = 1:30){
   #' Leiden clustering into a set number of clusters. Varies resolution until the number of clusters is achieved.
   #' Requires a conda environment with igraph and leidenalg installed.
   #' @param seurat_object a normalized, integrated Seurat object
@@ -64,6 +64,14 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
   require(Seurat)
   seurat_object$starting_clusters <- Idents(seurat_object)
+  if (ncol(seurat_object) < 3) {
+  message("Skipping: too few cells for clustering.")
+  seurat_object$leiden_clusters <- seurat_object$starting_clusters
+  return(seurat_object)
+  }
+  available_pcs <- ncol(Embeddings(seurat_object, reduction = "pca"))
+  dims_to_use <- dims.use[dims.use <= available_pcs]
+  seurat_object <- FindNeighbors(seurat_object, dims = dims_to_use, verbose = FALSE)
   initial_resolution = 1
   seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
   cluster_count <- length(levels(Idents(seurat_object)))
