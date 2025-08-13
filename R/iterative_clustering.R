@@ -34,13 +34,15 @@ clustering_iteration <- function(seurat_object, min_score, cluster_size, pct.1){
   merged_seurats@reductions <- seurat_object@reductions
   return(merged_seurats)
 }
-iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5, dims.use = 1:30){
+iterative_clustering <- function(seurat_object, max_iterations = 10, min_score = 150, cluster_size = 20, pct.1 = 0.5, dims_use = 1:30, reduction.name = "pca"){
   #' Performs iterative clustering on a Seurat object to find clusters expressing significant DE genes.
   #' @param seurat_object a normalized, integrated Seurat object
   #' @param max_iterations number of clustering iterations to perform
   #' @param min_score minimum cluster score
   #' @param cluster_size minimum cluster size
   #' @param pct.1 fraction of gene expression in the overexpressing cluster
+  #' @param dims_use number of dimensions to use for neighbors graph
+  #' @reduction.name name of the dimensional reduction used to find neighbors
   #' @returns a Seurat object with clusters in the "leiden_clusters" slot
   seurat_object <- initial_clustering(seurat_object)
   cluster_sizes <- data.frame()
@@ -53,7 +55,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   }
   return(seurat_object)
 }
-leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = 1:30){
+leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = dims_use, reduction = reduction.name){
   #' Leiden clustering into a set number of clusters. Varies resolution until the number of clusters is achieved.
   #' Requires a conda environment with igraph and leidenalg installed.
   #' @param seurat_object a normalized, integrated Seurat object
@@ -69,9 +71,10 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   seurat_object$leiden_clusters <- seurat_object$starting_clusters
   return(seurat_object)
   }
-  available_pcs <- ncol(Embeddings(seurat_object, reduction = "pca"))
+  available_pcs <- ncol(Embeddings(seurat_object, reduction = reduction))
   dims_to_use <- dims.use[dims.use <= available_pcs]
-  seurat_object <- FindNeighbors(seurat_object, dims = dims_to_use, verbose = FALSE)
+  k_val <- min(20, cell_count - 1)
+  seurat_object <- FindNeighbors(seurat_object, dims = dims_to_use, reduction = reduction, verbose = FALSE, k.param = k_val)
   initial_resolution = 1
   seurat_object <- FindClusters(seurat_object, resolution = initial_resolution, algorithm = 4, method = "igraph", verbose = FALSE)
   cluster_count <- length(levels(Idents(seurat_object)))
