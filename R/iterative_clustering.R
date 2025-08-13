@@ -48,7 +48,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   cluster_sizes <- data.frame()
   for (i in 2:max_iterations-1){
     old_clusters <- length(levels(seurat_object$leiden_clusters))
-    seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size, pct.1, reduction_name = reduction.name)
+    seurat_object <- clustering_iteration(seurat_object, min_score, cluster_size, pct.1, reduction.name = reduction.name)
     seurat_object$leiden_clusters <- as.factor(seurat_object$leiden_clusters)
     num_clusters <- length(levels(seurat_object$leiden_clusters))
     if (old_clusters - num_clusters == 0) break()
@@ -71,7 +71,7 @@ leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150
   seurat_object$leiden_clusters <- seurat_object$starting_clusters
   return(seurat_object)
   }
-  available_pcs <- ncol(Embeddings(seurat_object, reduction = reduction))
+  available_pcs <- ncol(Embeddings(seurat_object, reduction = reduction.name))
   dims_to_use <- dims.use[dims.use <= available_pcs]
   cell_count = ncol(seurat_object)
   k_val <- min(20, cell_count - 1)
