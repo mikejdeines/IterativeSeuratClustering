@@ -45,7 +45,7 @@ iterative_clustering <- function(seurat_object, max_iterations = 10, min_score =
   }
   return(seurat_object)
 }
-leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = 1:30, reduction.name = "pca"){
+leiden_clustering <- function(seurat_object, num_clusters = 2, score_limit = 150, min_size = 20, pct.1 = 0.5, dims.use = 1:30, reduction.name = reduction.name){
   #' Leiden clustering into a set number of clusters. Varies resolution until the number of clusters is achieved.
   #' Requires a conda environment with igraph and leidenalg installed.
   #' @param seurat_object a normalized, integrated Seurat object
